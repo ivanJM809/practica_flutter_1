@@ -104,4 +104,3 @@ Future<List<Producto>> buscarProductosPorNombre(String query) async {
     }
   }
 }
-
