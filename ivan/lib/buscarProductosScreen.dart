@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ivan/model/producto.dart';
+import 'package:ivan/services/api_service.dart'; 
 
 class BuscarProductosScreen extends StatefulWidget {
   const BuscarProductosScreen({super.key});
 
   @override
-  State<BuscarProductosScreen> createState() => _CatalogoScreenState();
+  State<BuscarProductosScreen> createState() => _BuscarProductosScreenState();
 }
 
-class _CatalogoScreenState extends State<BuscarProductosScreen> {
-  late Future<List<Producto>> _productosFuture;
+class _BuscarProductosScreenState extends State<BuscarProductosScreen> {
   List<Producto> _productos = [];
   List<Producto> _productosFiltrados = [];
   String _query = '';
@@ -21,26 +21,21 @@ class _CatalogoScreenState extends State<BuscarProductosScreen> {
   }
 
   void _cargarProductos() async {
-    _productosFuture = Producto().obtenerProductosRegistrados();
-    var productos = await _productosFuture;
+    var productosData = await ApiService.fetchProductos(); 
+    List<Producto> productos = productosData.map((data) => Producto.fromJson(data)).toList();
+    
     setState(() {
       _productos = productos;
-      _productosFiltrados = productos; 
+      _productosFiltrados = productos;
     });
   }
 
-  void _buscarProducto(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _productosFiltrados = _productos;
-      });
-    } else {
-      Producto producto = Producto();
-      List<Producto> resultados = await producto.buscarProductosPorNombre(query);
-      setState(() {
-        _productosFiltrados = resultados;
-      });
-    }
+  void _buscarProducto(String query) {
+    setState(() {
+      _productosFiltrados = _productos
+          .where((producto) => producto.nombre!.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   Widget _buildProductoCard(Producto producto, double width) {
@@ -118,7 +113,7 @@ class _CatalogoScreenState extends State<BuscarProductosScreen> {
           icon: Icon(Icons.keyboard_backspace_sharp),
         ),
         title: Text(
-          'Catálogo',
+          'Buscar Productos',
           style: TextStyle(
             fontSize: 20,
             fontFamily: 'permanent_marker',
@@ -131,7 +126,6 @@ class _CatalogoScreenState extends State<BuscarProductosScreen> {
       
       body: Column(
         children: [
-          // 🔍 Barra de búsqueda
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
@@ -170,7 +164,6 @@ class _CatalogoScreenState extends State<BuscarProductosScreen> {
           ),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/ingresar_producto');

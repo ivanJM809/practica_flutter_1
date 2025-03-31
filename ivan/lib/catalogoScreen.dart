@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:ivan/model/producto.dart';
+import 'package:ivan/services/api_service.dart'; 
 
 class CatalogoScreen extends StatefulWidget {
   const CatalogoScreen({super.key});
@@ -10,15 +10,20 @@ class CatalogoScreen extends StatefulWidget {
 }
 
 class _CatalogoScreenState extends State<CatalogoScreen> {
-  late Future<List<Producto>> _productosFuture;
+  late Future<List<Producto>> _productosFuture;   //En esta variable variable se almacenarán los productos obtenidos por mi api, se inicializa mas tarde en initState
 
   @override
   void initState() {
     super.initState();
-    _productosFuture = Producto().obtenerProductosRegistrados();
+    _productosFuture = _buscarProductosDesdeAPI();  //llamada inicial a la API y cargar los productos mediante el método _buscarProductosDesdeAPI
   }
 
-  Widget _buildProductoCard(Producto producto, double width) {
+  Future<List<Producto>> _buscarProductosDesdeAPI() async {
+    final productosData = await ApiService.fetchProductos();    //ApiService.fetchProductos() para obtener los productos desde la API.
+    return productosData.map((data) => Producto.fromJson(data)).toList();     //Devuelve una lista de productos, convierte cada mapa en un objeto producto 
+  }
+
+  Widget _buildProductoCard(Producto producto, double width) {    //Metodo para construir la tarjeta de cada producto
     return Container(
       margin: EdgeInsets.all(10), 
       decoration: BoxDecoration(
@@ -36,10 +41,10 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
         mainAxisSize: MainAxisSize.min, 
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          producto.imagen != null
+          producto.imagen != null   //Si el prodcuto tiene una imagen
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.memory(
+                  child: Image.memory(   //muestra la imagen
                     producto.imagen!,
                     width: width * 0.1, 
                     height: width * 0.1, 
@@ -71,7 +76,9 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
             ),
           ),
           SizedBox(height: 10), 
+
           // Código del producto
+          
           Text(
             'Código: ${producto.codigo}',
             style: TextStyle(fontSize: width * 0.014,
@@ -129,7 +136,6 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
               builder: (context, constraints) {
                 final double width = constraints.maxWidth;
 
-                
                 return GridView.builder(
                   padding: EdgeInsets.all(12), 
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -146,7 +152,6 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
           }
         },
       ),
-
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {

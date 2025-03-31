@@ -1,16 +1,14 @@
 import 'dart:typed_data';
-
 import 'package:mysql1/mysql1.dart';
 import '../../controller/database.dart';
 
-class Producto{
-
+class Producto {
   int? _idproducto;
   String? _nombre;
   String? _codigo;
   Uint8List? _imagen;
 
-// Constructor
+  // Constructor
   Producto({
     int? idproducto,
     String? nombre,
@@ -20,7 +18,8 @@ class Producto{
         _nombre = nombre,
         _codigo = codigo,
         _imagen = imagen;
- Producto.fromMap(Map<String, dynamic> map) {
+
+  Producto.fromMap(Map<String, dynamic> map) {
     _idproducto = map["idproducto"];
     _nombre = map["nombre"];
     _codigo = map["codigo"];
@@ -33,66 +32,68 @@ class Producto{
       _imagen = blobData;
     }
   }
-    
 
-//getters y setters
-String? get nombre {
-return _nombre;
-} 
+  // Método fromJson para conversión desde JSON
+  factory Producto.fromJson(Map<String, dynamic> json) {
+    return Producto(
+      idproducto: json['idproducto'],
+      nombre: json['nombre'] ?? 'Sin nombre',
+      codigo: json['codigo'] ?? 'Sin código',
+      imagen: json['imagen'] != null ? Uint8List.fromList(List<int>.from(json['imagen'])) : null,
+    );
+  }
 
-set nombre(String? texto) => _nombre = texto;
+  // Getters y Setters
+  String? get nombre => _nombre;
+  set nombre(String? texto) => _nombre = texto;
 
-String? get codigo {
-return _codigo;
-}
+  String? get codigo => _codigo;
+  set codigo(String? texto) => _codigo = texto;
 
-set codigo(String? texto) => _codigo = texto;
-
-
-int? get idproducto {
-return _idproducto;
-}
-set idproducto (int? numero) => _idproducto = numero;
+  int? get idproducto => _idproducto;
+  set idproducto(int? numero) => _idproducto = numero;
 
   Uint8List? get imagen => _imagen;
   set imagen(Uint8List? value) => _imagen = value;
 
-
-
+  // Insertar producto en la base de datos
   insertarProducto() async {
-  var conn = await Database().conexion();
-  try {
-    await conn.query(
-      "INSERT INTO productos(idproducto, nombre, codigo, imagen) VALUES (?, ?, ?, ?)", 
-      [_idproducto, _nombre, _codigo, _imagen]
-    );
-    print("Producto insertado correctamente");
-  } catch (e) {
-    print("Error al insertar el producto: $e");
-  } finally {
-    await conn.close();
+    var conn = await Database().conexion();
+    try {
+      await conn.query(
+        "INSERT INTO productos(idproducto, nombre, codigo, imagen) VALUES (?, ?, ?, ?)",
+        [_idproducto, _nombre, _codigo, _imagen],
+      );
+      print("Producto insertado correctamente");
+    } catch (e) {
+      print("Error al insertar el producto: $e");
+    } finally {
+      await conn.close();
+    }
   }
-}
 
+  // Obtener todos los productos
   Future<List<Producto>> obtenerProductosRegistrados() async {
-  var conn = await Database().conexion();
-  try {
-    var listado = await conn.query("SELECT * FROM productos");
-    List<Producto> productos = listado.map((row) => Producto.fromMap(row.fields)).toList();
-    return productos;
-  } catch(e) {
-    print(e);
-    return [];  
-  } finally {
-    await conn.close();
+    var conn = await Database().conexion();
+    try {
+      var listado = await conn.query("SELECT * FROM productos");
+      List<Producto> productos = listado.map((row) => Producto.fromMap(row.fields)).toList();
+      return productos;
+    } catch (e) {
+      print(e);
+      return [];
+    } finally {
+      await conn.close();
+    }
   }
-}
-Future<List<Producto>> buscarProductosPorNombre(String query) async {
+
+  // Buscar productos por nombre
+  Future<List<Producto>> buscarProductosPorNombre(String query) async {
     var conn = await Database().conexion();
     try {
       var listado = await conn.query(
         "SELECT * FROM productos WHERE nombre LIKE ?",
-        ['%$query%']
+        ['%$query%'],
       );
       List<Producto> productos = listado.map((row) => Producto.fromMap(row.fields)).toList();
       return productos;
