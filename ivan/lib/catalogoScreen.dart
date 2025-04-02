@@ -19,7 +19,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
   }
 
   Future<List<Producto>> _buscarProductosDesdeAPI() async {
-    final productosData = await ApiService.fetchProductos();    //ApiService.fetchProductos() para obtener los productos desde la API.
+    final productosData = await ApiService.buscarProductos();    //ApiService.fetchProductos() para obtener los productos desde la API.
     return productosData.map((data) => Producto.fromJson(data)).toList();     //Devuelve una lista de productos, convierte cada mapa en un objeto producto 
   }
 

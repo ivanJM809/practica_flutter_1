@@ -73,7 +73,7 @@ class Producto {
   }
 
   // Obtener todos los productos
-  Future<List<Producto>> obtenerProductosRegistrados() async {
+  /*Future<List<Producto>> obtenerProductosRegistrados() async {
     var conn = await Database().conexion();
     try {
       var listado = await conn.query("SELECT * FROM productos");
@@ -85,10 +85,10 @@ class Producto {
     } finally {
       await conn.close();
     }
-  }
+  }*/
 
   // Buscar productos por nombre
-  Future<List<Producto>> buscarProductosPorNombre(String query) async {
+ /* Future<List<Producto>> buscarProductosPorNombre(String query) async {
     var conn = await Database().conexion();
     try {
       var listado = await conn.query(
@@ -103,5 +103,5 @@ class Producto {
     } finally {
       await conn.close();
     }
-  }
+  }*/
 }

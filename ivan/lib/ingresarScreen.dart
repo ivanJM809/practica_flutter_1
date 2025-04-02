@@ -36,8 +36,7 @@ class _IngresarProductoScreenState extends State<IngresarProductoScreen> {
     }
   }
 }
-
-
+ 
   Future<void> _guardarProducto() async {
     if (_formKey.currentState!.validate() && _imagenBytes != null) {
       Producto nuevoProducto = Producto()

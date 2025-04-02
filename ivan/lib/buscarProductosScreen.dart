@@ -10,9 +10,9 @@ class BuscarProductosScreen extends StatefulWidget {
 }
 
 class _BuscarProductosScreenState extends State<BuscarProductosScreen> {
-  List<Producto> _productos = [];
+  List<Producto> _productos = [];  //Almaceno  la lista de productos obtenidos por la API
   List<Producto> _productosFiltrados = [];
-  String _query = '';
+  String _query = '';  //almaceno el texto del campo de búsqueda
 
   @override
   void initState() {
@@ -20,11 +20,11 @@ class _BuscarProductosScreenState extends State<BuscarProductosScreen> {
     _cargarProductos();
   }
 
-  void _cargarProductos() async {
-    var productosData = await ApiService.fetchProductos(); 
+  void _cargarProductos() async {  //Cargo los productos desde la API
+    var productosData = await ApiService.buscarProductos(); 
     List<Producto> productos = productosData.map((data) => Producto.fromJson(data)).toList();
     
-    setState(() {
+    setState(() {  // Actualiza la interfaz cuando las variables cambian
       _productos = productos;
       _productosFiltrados = productos;
     });
